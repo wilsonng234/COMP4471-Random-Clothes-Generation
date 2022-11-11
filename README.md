@@ -1,1 +1,1 @@
-# COMP4471-Person-Re-ID
+# COMP4471-Virtual-Try-On
