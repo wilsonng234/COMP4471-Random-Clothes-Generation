@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from generator import generator
 from discriminator import discriminator
-from utils.noise import sample_noise
+from utils.noise_util import sample_noise
 from utils.optimizer_util import get_adam_optimizer
 from losses.squared_loss import discriminator_loss
 from losses.squared_loss import generator_loss
