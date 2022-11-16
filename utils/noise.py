@@ -6,7 +6,6 @@ def sample_noise(shape):
 
     Input:
     - shape: Integer giving the batch size of noise to generate.
-    - dim: Integer giving the dimension of noise to generate.
     
     Output:
     - A PyTorch Tensor of shape (shape) containing gaussian 

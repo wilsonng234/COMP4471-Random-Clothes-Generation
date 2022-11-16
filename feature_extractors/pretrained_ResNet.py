@@ -2,6 +2,11 @@ import torch.nn as nn
 import torchvision.models as models
 
 def get_pretrained_resnet152():
+    """
+    Outputs:
+    - resnet152: A pretrained resnet152 model without the last 2 avg-pooling, fc-layer.
+    """
+    
     resnet152 = models.resnet152(weights=models.ResNet152_Weights.IMAGENET1K_V2)
 
     modules = list(resnet152.children())[:-2]
