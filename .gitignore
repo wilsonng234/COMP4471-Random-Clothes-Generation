@@ -2,3 +2,4 @@ test.*
 .DS_store
 __pycache__
 datasets
+.idea
