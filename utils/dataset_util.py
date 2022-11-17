@@ -26,8 +26,6 @@ def transform_data():
     label = img['label']
     if not os.path.exists('compressed'):
         os.makedirs('compressed')
-    if not os.path.exists('original'):
-        os.makedirs('original')
     folder_create(id,label)
     copy_file(id,label)
 
@@ -61,9 +59,7 @@ def copy_file(id,label):
         file_name = name+'.jpg'
         # print(source_file)
         compressed_source = os.path.join('./images_compressed',file_name)
-        original__source = os.path.join('./images_original',file_name)
         compressed_target = os.path.join('./compressed',folder,file_name)
-        original_target = os.path.join('./original',folder,file_name)
         # print(compressed_target)
         # print(compressed_source)
         
