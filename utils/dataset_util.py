@@ -65,5 +65,3 @@ def copy_file(id,label):
         
         if not os.path.exists(compressed_target):
             shutil.copy(compressed_source,compressed_target)
-        if not os.path.exists(original_target):
-            shutil.copy(original__source,original_target)
