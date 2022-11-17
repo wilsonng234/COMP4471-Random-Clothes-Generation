@@ -14,7 +14,7 @@ def get_dataloader(batch_size, img_size):
         transforms.ToTensor(),
         transforms.Lambda(lambda img: img*2-1),
     ])
-    dataset = datasets.ImageFolder('datasets', transform=transform)
+    dataset = datasets.ImageFolder('datasets/classes', transform=transform)
 
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
