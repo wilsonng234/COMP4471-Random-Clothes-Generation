@@ -16,7 +16,7 @@ def get_dataloader(batch_size, img_size):
         transforms.ToTensor(),
         transforms.Lambda(lambda img: img*2-1),
     ])
-    dataset = datasets.ImageFolder('datasets/classes', transform=transform)
+    dataset = datasets.ImageFolder('datasets/images_without_bg', transform=transform)
 
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
@@ -24,12 +24,12 @@ def get_dataloader(batch_size, img_size):
 
 def remove_background():
     images = listdir('datasets/images')
-    if not os.path.exists('datasets/images_without_bg'):
-        os.makedirs('datasets/images_without_bg')
+    if not os.path.exists('datasets/images_without_bg/images'):
+        os.makedirs('datasets/images_without_bg/images')
     
     for image in images:
         img_path = os.path.join('datasets/images', image)
-        output_path = os.path.join('datasets/images_without_bg', image)
+        output_path = os.path.join('datasets/images_without_bg/images', image)
         
         if os.path.exists(output_path):
             continue
@@ -50,14 +50,14 @@ def combine_edges(dataloader, img_channel=3, img_size=240):
 
         return combined_img
 
-    output_path = 'datasets/combined_images'
+    output_path = 'datasets/combined_images/images'
 
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
     cnt = 1
-    for _, (images, _) in enumerate(dataloader):
-        for _, img in enumerate(images):
+    for images, _ in dataloader:
+        for img in images:
             img = img.numpy()
             img = img.transpose(1, 2, 0)    # 3, 255, 255 -> 255, 255, 3
 
@@ -79,7 +79,7 @@ def combine_edges(dataloader, img_channel=3, img_size=240):
             cv2.imwrite(os.path.join(output_path, str(cnt) + "_combined.jpg"), combined)
             cnt += 1
 
-def split_data_folders():  
+def split_data_folders():  # it is not used in pix2pix
     def read_csv():
         img = pd.read_csv('datasets/images.csv')
         return img
