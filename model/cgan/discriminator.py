@@ -18,7 +18,7 @@ def discriminator(input_channels, input_size):
         # nn.Linear(4*4*64, 1)
 
         nn.Flatten(),
-        nn.Linear(65536, 512),
+        nn.Linear(input_channels*input_size*input_size, 512),
         nn.LeakyReLU(),
         nn.Dropout(),
         nn.Linear(512, 256),
