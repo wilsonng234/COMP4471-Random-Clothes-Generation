@@ -1,14 +1,17 @@
 import config
 from generator import Generator
+from dataset import ClothingDataset
 
 class Pix2Pix():
-    def __init__(self, batch_size=config.BATCH_SIZE, img_channels=config.IMG_CHANNELS, 
-                img_size=config.IMG_SIZE, device=config.DEVICE):
-        
-        self.generator = Generator(img_channels).to(device) 
+    def __init__(self):
+        self.train_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.TRAIN_DIR).get_dataloader(config.BATCH_SIZE)
+        self.val_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.VAL_DIR).get_dataloader(config.BATCH_SIZE)
+        self.test_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.TEST_DIR).get_dataloader(config.BATCH_SIZE)
+
+        self.generator = Generator(config.IMG_CHANNELS).to(config.DEVICE) 
         self.discriminator = None   #.to(device)
-        self.img_channels = img_channels
-        self.img_size = img_size
+        self.img_channels = config.IMG_CHANNELS
+        self.img_size = config.IMG_SIZE
         
         # TODO: initalizer
         # he_initialization(self.generator)
@@ -22,3 +25,4 @@ class Pix2Pix():
     
     def train(self, num_epochs=100):
         pass
+        
