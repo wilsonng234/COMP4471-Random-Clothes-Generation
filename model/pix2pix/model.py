@@ -25,4 +25,4 @@ class Pix2Pix():
     
     def train(self, num_epochs=100):
         pass
-    
+        
