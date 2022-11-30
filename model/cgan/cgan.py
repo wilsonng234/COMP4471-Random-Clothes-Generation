@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
-from model.generator import generator
-from model.discriminator import discriminator
+from model.cgan.generator import generator
+from model.cgan.discriminator import discriminator
 from utils.noise_util import sample_noise
 from utils.optimizer_util import get_adam_optimizer
 from losses.squared_loss import discriminator_loss
@@ -107,3 +107,4 @@ class CGan():
                     
                     print()
                 iter_count += 1
+                

@@ -1,6 +1,9 @@
 import torch
 from torch.autograd import Variable
 from noise_util import sample_noise
+from tqdm import tqdm
+from torch.tensorboard import Summarywriter
+import 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -21,7 +24,11 @@ def train(loader_train, D, G, D_solver, G_solver, discriminator_loss, generator_
     - num_epochs: Number of epochs over the training dataset to use for training.
     """
     iter_count = 0
+    writer = Summarywriter.writer()
+    
     for epoch in range(num_epochs):
+        d_total_error = None
+        g_error = None
         for images, labels in loader_train:
             assert len(images) == batch_size
 
@@ -54,5 +61,12 @@ def train(loader_train, D, G, D_solver, G_solver, discriminator_loss, generator_
             #     plt.show()
             #     print()
             iter_count += 1
+        
+        writer.add_scalar('d_total_error', d_total_error, epoch)
+        writer.add_scalar('g_error', g_error, epoch)
+        
+        if epoch%5 == 0:
+          torch.save(D,'./logs/epoch'+str(epoch)+'_D.pth')
+          torch.save(G,'./logs/epoch'+str(epoch)+'_G.pth')
 
-
+    writer.close()
