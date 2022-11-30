@@ -2,8 +2,7 @@ import torch
 from torch.autograd import Variable
 from noise_util import sample_noise
 from tqdm import tqdm
-from torch.tensorboard import Summarywriter
-import 
+from torch.utils.tensorboard import Summarywriter
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -29,14 +28,14 @@ def train(loader_train, D, G, D_solver, G_solver, discriminator_loss, generator_
     for epoch in range(num_epochs):
         d_total_error = None
         g_error = None
-        for images, labels in loader_train:
+        for img, images in loader_train:
             assert len(images) == batch_size
 
             D_solver.zero_grad()
             real_data = Variable(images).to(device)
             logits_real = D(2* (real_data - 0.5)).to(device)
 
-            g_fake_seed = Variable(sample_noise(batch_size, noise_size)).to(device)
+            g_fake_seed = Variable(img).to(device)
             # detach() separate a tensor from the computational graph by returning a new tensor that doesn’t require a gradient
             fake_images = G(g_fake_seed).detach() 
             logits_fake = D(fake_images.view(batch_size, 1, 28, 28))
@@ -46,7 +45,7 @@ def train(loader_train, D, G, D_solver, G_solver, discriminator_loss, generator_
             D_solver.step()
 
             G_solver.zero_grad()
-            g_fake_seed = Variable(sample_noise(batch_size, noise_size)).to(device)
+            g_fake_seed = Variable(img).to(device)
             fake_images = G(g_fake_seed)
 
             gen_logits_fake = D(fake_images.view(batch_size, 1, 28, 28))
