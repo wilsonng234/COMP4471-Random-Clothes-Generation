@@ -19,25 +19,24 @@ class Pix2Pix():
         self.test_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.TEST_DIR).get_dataloader(config.BATCH_SIZE)
 
         self.generator = Generator(config.IMG_CHANNELS).to(config.DEVICE) 
-        self.discriminator = Discriminator
+        self.discriminator = Discriminator(in_channels =3)
         self.img_channels = config.IMG_CHANNELS
         self.img_size = config.IMG_SIZE
         
         # TODO: initalizer
-        # he_initialization(self.generator)
-        # he_initialization(self.discriminator)
+        # hehe_initialization(self.generator)
+        # hehe_initialization(self.discriminator)
 
     def G(self, x):
         return self.generator(x)
 
-    def D(self, x):
-        return self.discriminator(x)
+    def D(self, x, y):
+        return self.discriminator(x, y)
         pass
     
     def train(self, num_epochs=100):
-        #  init the network
-        D = self.discriminator()
-        G = self.generator()
+        D = self.discriminator
+        G = self.generator
         #  init the optimizer
         D_solver = get_optimizer(D)
         G_solver = get_optimizer(G)
