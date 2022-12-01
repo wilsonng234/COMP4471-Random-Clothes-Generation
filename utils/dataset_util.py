@@ -39,7 +39,7 @@ def remove_background():
         output = output.convert('RGB')
         output.save(output_path)
 
-def combine_edges(dataloader, img_channel=3, img_size=256):
+def combine_edges(images_dir, combined_dir, img_channel=3, img_size=256):
     def merge(edges, original_img):
         blank_space = 12
         combined_img = np.zeros((edges.shape[0], edges.shape[1]*2 + blank_space, img_channel))
@@ -50,34 +50,39 @@ def combine_edges(dataloader, img_channel=3, img_size=256):
 
         return combined_img
 
-    output_path = 'datasets/combined_images/images'
+    images_names = listdir(images_dir)
+    if not os.path.exists(combined_dir):
+        os.makedirs(combined_dir)
 
-    if not os.path.exists(output_path):
-        os.makedirs(output_path)
+    cnt =0
+    for img_name in images_names:
+        img_path = os.path.join(images_dir, img_name)
+        output_path2 = os.path.join(combined_dir, str(cnt) + "_combined.jpg")
 
-    cnt = 1
-    for images, _ in dataloader:
-        for img in images:
-            img = img.numpy()
-            img = img.transpose(1, 2, 0)    # 3, 255, 255 -> 255, 255, 3
+        input = Image.open(img_path)
+        new_image =input.resize((img_size,img_size))
 
-            img_diff = np.ones(img.shape) * 255 - img
-            img_diff = np.uint8(img_diff)
+        img = np.array(new_image)
+        img_diff = np.ones(img.shape) * 255 - img
+        img_diff = np.uint8(img_diff)
 
-            threshold = 200
-            img_diff[img_diff < threshold] = 0
-            img_diff[img_diff >= threshold] = 255
-            
-            edges = cv2.Canny(image=img_diff, threshold1=90, threshold2=200)  # Canny Edge Detection
-            edges = cv2.morphologyEx(edges, cv2.MORPH_CLOSE, np.ones((3, 3),np.uint8))
+        new_im = img_diff.copy()
+        # threshold = 30
+        # new_im[new_im < threshold] = 0
+        # new_im[new_im >= threshold] = 255
+        
+        edges = cv2.Canny(image=new_im, threshold1=90, threshold2=230)  # Canny Edge Detection
+        # edges = cv2.morphologyEx(edges, cv2.MORPH_CLOSE, np.ones((1, 1),np.uint8))
+        edges = np.ones(edges.shape) * 255 - edges
+        edges = np.uint8(edges)
+        edges = cv2.cvtColor(edges, cv2.COLOR_GRAY2RGB)
+        rgb = img[...,::-1].copy()
 
-            edges = np.ones(edges.shape) * 255 - edges
-            edges = np.uint8(edges)
-            edges = cv2.cvtColor(edges, cv2.COLOR_GRAY2RGB)
-            
-            combined = merge(edges, (img+1)/2*255)
-            cv2.imwrite(os.path.join(output_path, str(cnt) + "_combined.jpg"), combined)
-            cnt += 1
+
+        combined = merge(edges, rgb)
+        cv2.imwrite(output_path2, combined)
+        cnt = cnt +1
+
 
 def train_valid_test_split(images_dir, train=0.8, valid=0.1, test=0.1):
     images_names = os.listdir(images_dir)
