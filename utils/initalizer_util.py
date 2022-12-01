@@ -1,4 +1,19 @@
 import torch.nn as nn
+import os
+
+def mkdirs(paths):
+    # path builder
+    if isinstance(paths, list) and not isinstance(paths, str):
+        for path in paths:
+            mkdir(path)
+    else:
+        mkdir(paths)
+
+
+def mkdir(path):
+    # make new directions if not exits
+    if not os.path.exists(path):
+        os.makedirs(path)
 
 def he_initialization(model):
     def init_weights(m):

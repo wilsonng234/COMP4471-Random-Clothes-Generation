@@ -26,14 +26,14 @@ class Pix2Pix():
         self.img_size = config.IMG_SIZE
         
         # TODO: initalizer
-        # he_initialization(self.generator)
-        # he_initialization(self.discriminator)
+        # hehe_initialization(self.generator)
+        # hehe_initialization(self.discriminator)
 
     def G(self, x):
         return self.generator(x)
 
-    def D(self, x):
-        pass
+    def D(self, x, y):
+        return self.discriminator(x, y)
     
     def train(self, num_epochs=100):
         D = self.discriminator
