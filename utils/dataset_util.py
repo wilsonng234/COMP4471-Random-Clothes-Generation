@@ -39,7 +39,7 @@ def remove_background():
         output = output.convert('RGB')
         output.save(output_path)
 
-def combine_edges(dataloader, img_channel=3, img_size=240):
+def combine_edges(dataloader, img_channel=3, img_size=256):
     def merge(edges, original_img):
         blank_space = 12
         combined_img = np.zeros((edges.shape[0], edges.shape[1]*2 + blank_space, img_channel))
