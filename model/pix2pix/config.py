@@ -14,7 +14,7 @@ TEST_DIR = "datasets/combined_images/test"
 EVALUATION_DIR = "datasets/evaluation"
 
 LOAD_MODEL = False
-TRAIN_MODEL = False
+MODEL_PATH = "checkpoints"
 
 augmentation_transform = transforms.RandomApply(
     nn.ModuleList(
