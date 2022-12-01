@@ -22,24 +22,34 @@ def get_dataloader(batch_size, img_size):
 
     return dataloader
 
-def remove_background():
-    images = listdir('datasets/images')
-    if not os.path.exists('datasets/images_without_bg/images'):
-        os.makedirs('datasets/images_without_bg/images')
+def remove_background(images_dir, output_dir):
+    # images_dir: directory of images with background
+
+    images_names = listdir(images_dir)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
     
-    for image in images:
-        img_path = os.path.join('datasets/images', image)
-        output_path = os.path.join('datasets/images_without_bg/images', image)
+    for image_name in images_names:
+        img_path = os.path.join(images_dir, image_name)
+        output_path = os.path.join(output_dir, image_name)
         
         if os.path.exists(output_path):
             continue
         
         input = Image.open(img_path)
-        output = rembg.remove(input)
+        input_without_bg = rembg.remove(input)
+
+        white_mask = Image.new("RGBA", input.size, "WHITE")
+        white_mask.paste(input_without_bg, mask=input_without_bg)
+        
+        output = white_mask
         output = output.convert('RGB')
+
         output.save(output_path)
 
 def combine_edges(images_dir, combined_dir, img_channel=3, img_size=256):
+    # images_dir: directory of images without background
+
     def merge(edges, original_img):
         blank_space = 12
         combined_img = np.zeros((edges.shape[0], edges.shape[1]*2 + blank_space, img_channel))
