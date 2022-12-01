@@ -12,6 +12,7 @@ TRAIN_DIR = "datasets/combined_images/train"
 VAL_DIR = "datasets/combined_images/valid"
 TEST_DIR = "datasets/combined_images/test"
 EVALUATION_DIR = "datasets/evaluation"
+TENSORBOARD_DIR = "tensorboard"
 
 LOAD_MODEL = False
 MODEL_PATH = "checkpoints"
