@@ -53,6 +53,7 @@ class Pix2Pix():
 
         bce = nn.BCEWithLogitsLoss()
         l1 = nn.L1Loss()
+        import numpy as np
         summary_writer = tensorboard.SummaryWriter(log_dir=config.TENSORBOARD_DIR)
         discriminator_train_loss_history = []
         # discriminator_valid_loss_history = []
@@ -92,8 +93,9 @@ class Pix2Pix():
             if epoch%5==4:
                 save_model(D, config.MODEL_PATH, "discriminator")
                 save_model(G, config.MODEL_PATH, "generator")
-                write_history(summary_writer, "Discriminator Loss/train", discriminator_train_loss_history)
-                write_history(summary_writer, "Generator Loss/train", generator_train_loss_history)
+                write_history(summary_writer, "Discriminator Loss/train", discriminator_train_loss_history, epoch)
+                write_history(summary_writer, "Generator Loss/train", generator_train_loss_history, epoch)
+            
             # GENERATE IMAGES
             evaluation_dir = config.EVALUATION_DIR
             if not os.path.exists(evaluation_dir):
@@ -107,30 +109,32 @@ class Pix2Pix():
             idx = random.randint(0, self.val_loader.batch_size-1)
 
             edges, images = self.val_loader.__iter__().__next__()
-            edges = (edges[idx] + 0.5).to(config.DEVICE)
-            images = (images[idx] + 0.5).to(config.DEVICE)
+            edges = (edges + 0.5).to(config.DEVICE)
+            images = (images + 0.5).to(config.DEVICE)
             fake_images = G(edges).to(config.DEVICE)
             
             edge = transforms.ToPILImage()(edges[idx])
             image = transforms.ToPILImage()(images[idx])
             fake_image = transforms.ToPILImage()(fake_images[idx])
-            edge.save(os.path.join(output_dir, f"edge_{epoch}"))
-            image.save(os.path.join(output_dir, f"image{epoch}"))
-            fake_image.save(os.path.join(output_dir, f"fake_image{epoch}"))
+            edge.save(os.path.join(output_dir, f"edge_{epoch}.jpg"))
+            image.save(os.path.join(output_dir, f"image{epoch}.jpg"))
+            fake_image.save(os.path.join(output_dir, f"fake_image{epoch}.jpg"))
 
             # test evaluation output
             output_dir = os.path.join(evaluation_dir, "test")
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
+            
+            idx = random.randint(0, self.val_loader.batch_size-1)
 
             edges, images = self.val_loader.__iter__().__next__()
-            edges = (edges[idx] + 0.5).to(config.DEVICE)
-            images = (images[idx] + 0.5).to(config.DEVICE)
+            edges = (edges + 0.5).to(config.DEVICE)
+            images = (images + 0.5).to(config.DEVICE)
             fake_images = G(edges).to(config.DEVICE)
 
             edge = transforms.ToPILImage()(edges[idx])
             image = transforms.ToPILImage()(images[idx])
             fake_image = transforms.ToPILImage()(fake_images[idx])
-            edge.save(os.path.join(output_dir, f"edge_{epoch}"))
-            image.save(os.path.join(output_dir, f"image{epoch}"))
-            fake_image.save(os.path.join(output_dir, f"fake_image{epoch}"))
+            edge.save(os.path.join(output_dir, f"edge_{epoch}.jpg"))
+            image.save(os.path.join(output_dir, f"image{epoch}.jpg"))
+            fake_image.save(os.path.join(output_dir, f"fake_image{epoch}.jpg"))
