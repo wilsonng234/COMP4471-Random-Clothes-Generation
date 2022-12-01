@@ -16,7 +16,8 @@ from .dataset import ClothingDataset
 
 from utils.optimizer_util import get_adam_optimizer
 from utils.initalizer_util import he_initialization
-from utils.model_utils import save_model, load_model
+from utils.model_utils import save_model, load_model, write_history
+from torch.utils import tensorboard
 
 class Pix2Pix():
     def __init__(self):
@@ -25,7 +26,7 @@ class Pix2Pix():
         self.test_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.TEST_DIR).get_dataloader(config.BATCH_SIZE, shuffle=False)
 
         self.generator = Generator(config.IMG_CHANNELS).to(config.DEVICE) 
-        self.discriminator = Discriminator(in_channels =3).to(config.DEVICE)
+        self.discriminator = Discriminator(in_channels=3).to(config.DEVICE)
 
         if config.LOAD_MODEL:
             load_model(self.generator, config.MODEL_PATH, "generator")
@@ -52,7 +53,12 @@ class Pix2Pix():
 
         bce = nn.BCEWithLogitsLoss()
         l1 = nn.L1Loss()
-        
+        summary_writer = tensorboard(log_dir=config.TENSORBOARD_DIR)
+        discriminator_train_loss_history = []
+        # discriminator_valid_loss_history = []
+        generator_train_loss_history = []
+        # generator_valid_loss_history = []
+
         for epoch in range(num_epochs):
             for edge_images, original_images in tqdm(self.train_loader):
                 edge_images = edge_images.to(config.DEVICE)
@@ -65,6 +71,7 @@ class Pix2Pix():
                 fake_loss = bce(fake_logits, torch.zeros(fake_logits.shape))
                 real_loss = bce(real_logits, torch.ones(real_logits.shape))
                 discriminator_loss = fake_loss + real_loss
+                discriminator_train_loss_history.append(discriminator_loss)
 
                 discriminator_loss.backward()
                 D_solver.step()
@@ -74,6 +81,7 @@ class Pix2Pix():
                 fake_loss = bce(fake_logits, torch.ones(fake_logits.shape))
                 l1_loss = 100*l1(fake_images, original_images)
                 generator_loss = fake_loss + l1_loss
+                generator_train_loss_history.append(generator_loss)
 
                 generator_loss.backward()
                 G_solver.step()
@@ -82,7 +90,8 @@ class Pix2Pix():
             if epoch%5==4:
                 save_model(D, config.MODEL_PATH, "discriminator")
                 save_model(G, config.MODEL_PATH, "generator")
-
+                write_history(summary_writer, "Discriminator Loss/train", discriminator_train_loss_history)
+                write_history(summary_writer, "Generator Loss/train", generator_train_loss_history)
             # GENERATE IMAGES
             evaluation_dir = config.EVALUATION_DIR
             if not os.path.exists(evaluation_dir):
