@@ -16,6 +16,7 @@ from .dataset import ClothingDataset
 
 from utils.optimizer_util import get_adam_optimizer
 from utils.initalizer_util import he_initialization
+from utils.model_utils import save_model, load_model
 
 class Pix2Pix():
     def __init__(self):
@@ -23,14 +24,13 @@ class Pix2Pix():
         self.val_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.VAL_DIR).get_dataloader(config.BATCH_SIZE, shuffle=False)
         self.test_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.TEST_DIR).get_dataloader(config.BATCH_SIZE, shuffle=False)
 
-        self.generator = None
-        self.discriminator = None
+        self.generator = Generator(config.IMG_CHANNELS).to(config.DEVICE) 
+        self.discriminator = Discriminator(in_channels =3).to(config.DEVICE)
 
         if config.LOAD_MODEL:
-            pass
+            load_model(self.generator, config.MODEL_PATH, "generator")
+            load_model(self.discriminator, config.MODEL_PATH, "discriminator")
         else:
-            self.generator = Generator(config.IMG_CHANNELS).to(config.DEVICE) 
-            self.discriminator = Discriminator(in_channels =3).to(config.DEVICE)
             he_initialization(self.generator)
             he_initialization(self.discriminator)
 
@@ -79,44 +79,49 @@ class Pix2Pix():
                 G_solver.step()
                 G_solver.zero_grad()
 
-        evaluation_dir = config.EVALUATION_DIR
-        if not os.path.exists(evaluation_dir):
-            os.makedirs(evaluation_dir)
+            if epoch%5==4:
+                save_model(D, config.MODEL_PATH, "discriminator")
+                save_model(G, config.MODEL_PATH, "generator")
 
-        # validation evaluation output
-        output_dir = os.path.join(evaluation_dir, "valid")
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
+            # GENERATE IMAGES
+            evaluation_dir = config.EVALUATION_DIR
+            if not os.path.exists(evaluation_dir):
+                os.makedirs(evaluation_dir)
 
-        idx = random.randint(0, self.val_loader.batch_size-1)
+            # validation evaluation output
+            output_dir = os.path.join(evaluation_dir, "valid")
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
 
-        edges, images = self.val_loader.__iter__().__next__()
-        edges = (edges[idx] + 0.5).to(config.DEVICE)
-        images = (images[idx] + 0.5).to(config.DEVICE)
-        fake_images = G(edges).to(config.DEVICE)
+            idx = random.randint(0, self.val_loader.batch_size-1)
 
-        edge = transforms.ToPILImage()(edges[idx])
-        image = transforms.ToPILImage()(images[idx])
-        fake_image = transforms.ToPILImage()(fake_images[idx])
-        edge.save(os.path.join(output_dir, f"edge_{epoch}"))
-        image.save(os.path.join(output_dir, f"image{epoch}"))
-        fake_image.save(os.path.join(output_dir, f"fake_image{epoch}"))
+            edges, images = self.val_loader.__iter__().__next__()
+            edges = (edges[idx] + 0.5).to(config.DEVICE)
+            images = (images[idx] + 0.5).to(config.DEVICE)
+            fake_images = G(edges).to(config.DEVICE)
 
-        # test evaluation output
-        output_dir = os.path.join(evaluation_dir, "test")
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
+            edge = transforms.ToPILImage()(edges[idx])
+            image = transforms.ToPILImage()(images[idx])
+            fake_image = transforms.ToPILImage()(fake_images[idx])
+            edge.save(os.path.join(output_dir, f"edge_{epoch}"))
+            image.save(os.path.join(output_dir, f"image{epoch}"))
+            fake_image.save(os.path.join(output_dir, f"fake_image{epoch}"))
 
-        idx = random.randint(0, self.val_loader.batch_size-1)
+            # test evaluation output
+            output_dir = os.path.join(evaluation_dir, "test")
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
 
-        edges, images = self.val_loader.__iter__().__next__()
-        edges = (edges[idx] + 0.5).to(config.DEVICE)
-        images = (images[idx] + 0.5).to(config.DEVICE)
-        fake_images = G(edges).to(config.DEVICE)
+            idx = random.randint(0, self.val_loader.batch_size-1)
 
-        edge = transforms.ToPILImage()(edges[idx])
-        image = transforms.ToPILImage()(images[idx])
-        fake_image = transforms.ToPILImage()(fake_images[idx])
-        edge.save(os.path.join(output_dir, f"edge_{epoch}"))
-        image.save(os.path.join(output_dir, f"image{epoch}"))
-        fake_image.save(os.path.join(output_dir, f"fake_image{epoch}"))
+            edges, images = self.val_loader.__iter__().__next__()
+            edges = (edges[idx] + 0.5).to(config.DEVICE)
+            images = (images[idx] + 0.5).to(config.DEVICE)
+            fake_images = G(edges).to(config.DEVICE)
+
+            edge = transforms.ToPILImage()(edges[idx])
+            image = transforms.ToPILImage()(images[idx])
+            fake_image = transforms.ToPILImage()(fake_images[idx])
+            edge.save(os.path.join(output_dir, f"edge_{epoch}"))
+            image.save(os.path.join(output_dir, f"image{epoch}"))
+            fake_image.save(os.path.join(output_dir, f"fake_image{epoch}"))
