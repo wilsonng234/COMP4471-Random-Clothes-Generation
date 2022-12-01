@@ -2,9 +2,6 @@ import argparse
 import os
 import torch
 from utils.initalizer_util import mkdirs
-import model
-import losses
-import feature_extractors
 
 class BaseOptions():
     def __init__(self):
