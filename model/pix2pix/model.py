@@ -120,5 +120,3 @@ class Pix2Pix():
         edge.save(os.path.join(output_dir, f"edge_{epoch}"))
         image.save(os.path.join(output_dir, f"image{epoch}"))
         fake_image.save(os.path.join(output_dir, f"fake_image{epoch}"))
-
-model = Pix2Pix()   
