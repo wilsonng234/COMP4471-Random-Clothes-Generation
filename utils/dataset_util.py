@@ -10,18 +10,6 @@ import shutil
 import cv2
 import numpy as np
 
-def get_dataloader(batch_size, img_size):
-    transform = transforms.Compose([
-        transforms.Resize((img_size,img_size)), 
-        transforms.ToTensor(),
-        transforms.Lambda(lambda img: img*2-1),
-    ])
-    dataset = datasets.ImageFolder('datasets/images_without_bg', transform=transform)
-
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
-
-    return dataloader
-
 def remove_background(images_dir, output_dir):
     # images_dir: directory of images with background
 
