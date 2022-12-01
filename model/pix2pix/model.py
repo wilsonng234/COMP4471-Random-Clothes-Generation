@@ -64,24 +64,26 @@ class Pix2Pix():
                 edge_images = edge_images.to(config.DEVICE)
                 original_images = original_images.to(config.DEVICE)
 
-                fake_images = G(edge_images)
-                fake_logits = D(edge_images, fake_images.detach())
-                real_logits = D(edge_images, original_images)
+                with torch.cuda.amp.autocast():
+                    fake_images = G(edge_images)
+                    fake_logits = D(edge_images, fake_images.detach())
+                    real_logits = D(edge_images, original_images)
 
-                fake_loss = bce(fake_logits, torch.zeros(fake_logits.shape))
-                real_loss = bce(real_logits, torch.ones(real_logits.shape))
-                discriminator_loss = fake_loss + real_loss
-                discriminator_train_loss_history.append(discriminator_loss)
+                    fake_loss = bce(fake_logits, torch.zeros(fake_logits.shape).to(config.DEVICE))
+                    real_loss = bce(real_logits, torch.ones(real_logits.shape).to(config.DEVICE))
+                    discriminator_loss = fake_loss + real_loss
+                    discriminator_train_loss_history.append(discriminator_loss)
 
                 discriminator_loss.backward()
                 D_solver.step()
                 D_solver.zero_grad()
 
-                fake_logits = D(edge_images, fake_images)
-                fake_loss = bce(fake_logits, torch.ones(fake_logits.shape))
-                l1_loss = 100*l1(fake_images, original_images)
-                generator_loss = fake_loss + l1_loss
-                generator_train_loss_history.append(generator_loss)
+                with torch.cuda.amp.autocast():
+                    fake_logits = D(edge_images, fake_images)
+                    fake_loss = bce(fake_logits, torch.ones(fake_logits.shape).to(config.DEVICE))
+                    l1_loss = 100*l1(fake_images, original_images)
+                    generator_loss = fake_loss + l1_loss
+                    generator_train_loss_history.append(generator_loss)
 
                 generator_loss.backward()
                 G_solver.step()
@@ -108,7 +110,7 @@ class Pix2Pix():
             edges = (edges[idx] + 0.5).to(config.DEVICE)
             images = (images[idx] + 0.5).to(config.DEVICE)
             fake_images = G(edges).to(config.DEVICE)
-
+            
             edge = transforms.ToPILImage()(edges[idx])
             image = transforms.ToPILImage()(images[idx])
             fake_image = transforms.ToPILImage()(fake_images[idx])
@@ -120,8 +122,6 @@ class Pix2Pix():
             output_dir = os.path.join(evaluation_dir, "test")
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
-
-            idx = random.randint(0, self.val_loader.batch_size-1)
 
             edges, images = self.val_loader.__iter__().__next__()
             edges = (edges[idx] + 0.5).to(config.DEVICE)
