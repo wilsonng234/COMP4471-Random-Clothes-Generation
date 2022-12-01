@@ -5,6 +5,7 @@ from generator import Generator
 from discriminator import Discriminator
 from dataset import ClothingDataset
 from ...utils.optimizer_util import get_adam_optimizer
+from ...utils.initalizer_util import he_initialization
 from tqdm import tqdm
 
 class Pix2Pix():
@@ -21,13 +22,11 @@ class Pix2Pix():
         else:
             self.generator = Generator(config.IMG_CHANNELS).to(config.DEVICE) 
             self.discriminator = Discriminator(in_channels =3).to(config.DEVICE)
+            he_initialization(self.generator)
+            he_initialization(self.discriminator)
 
         self.img_channels = config.IMG_CHANNELS
         self.img_size = config.IMG_SIZE
-        
-        # TODO: initalizer
-        # hehe_initialization(self.generator)
-        # hehe_initialization(self.discriminator)
 
     def G(self, x):
         return self.generator(x)
