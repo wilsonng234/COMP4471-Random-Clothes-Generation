@@ -1,25 +1,27 @@
 import config
+import torch
+import torch.nn as nn
 from generator import Generator
 from discriminator import Discriminator
 from dataset import ClothingDataset
-from utils.train_util import train
-from utils.losses import discriminator_loss, generator_loss
-
-import torch
-
-
-def get_optimizer(model,learning_rate,beta1,beta2):
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, betas=[beta1, beta2])
-    return optimizer
+from ...utils.optimizer_util import get_adam_optimizer
+from tqdm import tqdm
 
 class Pix2Pix():
     def __init__(self):
-        self.train_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.TRAIN_DIR).get_dataloader(config.BATCH_SIZE)
-        self.val_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.VAL_DIR).get_dataloader(config.BATCH_SIZE)
-        self.test_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.TEST_DIR).get_dataloader(config.BATCH_SIZE)
+        self.train_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.TRAIN_DIR).get_dataloader(config.BATCH_SIZE, shuffle=True)
+        self.val_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.VAL_DIR).get_dataloader(config.BATCH_SIZE, shuffle=False)
+        self.test_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.TEST_DIR).get_dataloader(config.BATCH_SIZE, shuffle=False)
 
-        self.generator = Generator(config.IMG_CHANNELS).to(config.DEVICE) 
-        self.discriminator = Discriminator(in_channels =3)
+        self.generator = None
+        self.discriminator = None
+
+        if config.LOAD_MODEL:
+            pass
+        else:
+            self.generator = Generator(config.IMG_CHANNELS).to(config.DEVICE) 
+            self.discriminator = Discriminator(in_channels =3).to(config.DEVICE)
+
         self.img_channels = config.IMG_CHANNELS
         self.img_size = config.IMG_SIZE
         
@@ -32,18 +34,39 @@ class Pix2Pix():
 
     def D(self, x, y):
         return self.discriminator(x, y)
-        pass
     
     def train(self, num_epochs=100):
         D = self.discriminator
         G = self.generator
-        #  init the optimizer
-        D_solver = get_optimizer(D)
-        G_solver = get_optimizer(G)
-        loader_train = self.train_loader
+
+        D_solver = get_adam_optimizer(self.discriminator)
+        G_solver = get_adam_optimizer(self.generator)
+
+        bce = nn.BCEWithLogitsLoss()
+        l1 = nn.L1Loss()
         
-        train(loader_train, D, G, D_solver, G_solver, discriminator_loss, generator_loss, show_every=250, 
-          batch_size=128, noise_size=96, num_epochs=10)
-        
-        
-        
+        for _ in range(num_epochs):
+            for edge_images, original_images in tqdm(self.train_loader):
+                edge_images = edge_images.to(config.DEVICE)
+                original_images = original_images.to(config.DEVICE)
+
+                fake_images = G(edge_images)
+                fake_logits = D(edge_images, fake_images.detach())
+                real_logits = D(edge_images, original_images)
+
+                fake_loss = bce(fake_logits, torch.zeros(fake_logits.shape))
+                real_loss = bce(real_logits, torch.ones(real_logits.shape))
+                discriminator_loss = fake_loss + real_loss
+
+                discriminator_loss.backward()
+                D_solver.step()
+                D_solver.zero_grad()
+
+                fake_logits = D(edge_images, fake_images)
+                fake_loss = bce(fake_logits, torch.ones(fake_logits.shape))
+                l1_loss = 100*l1(fake_images, original_images)
+                generator_loss = fake_loss + l1_loss
+
+                generator_loss.backward()
+                G_solver.step()
+                G_solver.zero_grad()

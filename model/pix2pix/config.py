@@ -9,3 +9,5 @@ BLANK_SPACE = 12
 TRAIN_DIR = None
 VAL_DIR = None
 TEST_DIR = None
+
+LOAD_MODEL = False
