@@ -79,42 +79,83 @@ def combine_edges(dataloader, img_channel=3, img_size=256):
             cv2.imwrite(os.path.join(output_path, str(cnt) + "_combined.jpg"), combined)
             cnt += 1
 
-def split_data_folders():  # it is not used in pix2pix
-    def read_csv():
-        img = pd.read_csv('datasets/images.csv')
-        return img
+def train_valid_test_split(images_dir, train=0.8, valid=0.1, test=0.1):
+    images_names = os.listdir(images_dir)
+    num_images = len(images_names)
+
+    num_train = num_images*train
+    num_valid = num_images*valid
+    num_test = num_images-num_train-num_valid
+
+    train_dir = os.path.join(images_dir, "..", "train")
+    valid_dir = os.path.join(images_dir, "..", "valid")
+    test_dir = os.path.join(images_dir, "..", "test")
+
+    if not os.path.exists(train_dir):
+        os.makedirs(train_dir)
+    if not os.path.exists(valid_dir):
+        os.makedirs(valid_dir)
+    if not os.path.exists(test_dir):
+        os.makedirs(test_dir)
+
+    i = 0
+    while i < num_train:
+        img_name = images_names[i]
+        src = os.path.join(images_dir, img_name)
+        dst = os.path.join(train_dir, img_name)
+        shutil.copy2(src, dst)
+        i += 1
+
+    while i < num_train+num_valid:
+        img_name = images_names[i]
+        src = os.path.join(images_dir, img_name)
+        dst = os.path.join(valid_dir, img_name)
+        shutil.copy2(src, dst)
+        i += 1
+
+    while i < num_train+num_valid+num_test:
+        img_name = images_names[i]
+        src = os.path.join(images_dir, img_name)
+        dst = os.path.join(test_dir, img_name)
+        shutil.copy2(src, dst)
+        i += 1
+
+# def split_data_folders():  # it is not used in pix2pix
+#     def read_csv():
+#         img = pd.read_csv('datasets/images.csv')
+#         return img
         
-    def mkdir(path):
-        path1 = os.path.join('datasets/classes', path)
-        folder1 = os.path.exists(path1)
-        if not folder1:
-            os.makedirs(path1)
+#     def mkdir(path):
+#         path1 = os.path.join('datasets/classes', path)
+#         folder1 = os.path.exists(path1)
+#         if not folder1:
+#             os.makedirs(path1)
 
-    def folders_create(label):
-        for i in set(label):
-            mkdir(str(i))
+#     def folders_create(label):
+#         for i in set(label):
+#             mkdir(str(i))
 
-    def copy_files(id, label):
-        assert os.path.exists('datasets/images_without_bg')
-        assert os.path.exists('datasets/classes')
+#     def copy_files(id, label):
+#         assert os.path.exists('datasets/images_without_bg')
+#         assert os.path.exists('datasets/classes')
 
-        for i in range(len(id)):
-            name = str(id[i])
-            folder = str(label[i])
-            file_name = name+'.jpg'
+#         for i in range(len(id)):
+#             name = str(id[i])
+#             folder = str(label[i])
+#             file_name = name+'.jpg'
 
-            img_source = os.path.join('datasets/images_without_bg', file_name)
-            img_target = os.path.join('datasets/classes', folder, file_name)
+#             img_source = os.path.join('datasets/images_without_bg', file_name)
+#             img_target = os.path.join('datasets/classes', folder, file_name)
             
-            try:
-                if not os.path.exists(img_target):
-                    shutil.copy(img_source, img_target)
-            except FileNotFoundError:   # some image files are corrupted and be deleted
-                pass
+#             try:
+#                 if not os.path.exists(img_target):
+#                     shutil.copy(img_source, img_target)
+#             except FileNotFoundError:   # some image files are corrupted and be deleted
+#                 pass
 
-    img = read_csv()
-    id = img['image']
-    label = img['label']
+#     img = read_csv()
+#     id = img['image']
+#     label = img['label']
     
-    folders_create(label)
-    copy_files(id, label)
+#     folders_create(label)
+#     copy_files(id, label)
