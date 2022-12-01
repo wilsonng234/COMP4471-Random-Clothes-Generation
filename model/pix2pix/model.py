@@ -53,7 +53,7 @@ class Pix2Pix():
 
         bce = nn.BCEWithLogitsLoss()
         l1 = nn.L1Loss()
-        summary_writer = tensorboard(log_dir=config.TENSORBOARD_DIR)
+        summary_writer = tensorboard.SummaryWriter(log_dir=config.TENSORBOARD_DIR)
         discriminator_train_loss_history = []
         # discriminator_valid_loss_history = []
         generator_train_loss_history = []
