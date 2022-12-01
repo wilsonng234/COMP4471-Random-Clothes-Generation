@@ -8,9 +8,9 @@ IMG_CHANNELS = 3
 IMG_SIZE = 256
 BLANK_SPACE = 12
 
-TRAIN_DIR = None
-VAL_DIR = None
-TEST_DIR = None
+TRAIN_DIR = "datasets/combined_images/train"
+VAL_DIR = "datasets/combined_images/valid"
+TEST_DIR = "datasets/combined_images/test"
 
 LOAD_MODEL = False
 TRAIN_MODEL = False
