@@ -19,9 +19,10 @@ MODEL_PATH = "checkpoints"
 
 augmentation_transform = transforms.RandomApply(
     nn.ModuleList(
-        [
-            transforms.ColorJitter(brightness=0, contrast=0, saturation=0.2, hue=0.2),
-            transforms.RandomRotation(degrees=(45, 45))
+        [   
+            transforms.ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5, hue=0.5),
+            transforms.RandomHorizontalFlip(p=0.5),
+            # transforms.RandomRotation(degrees=(10, 10))
         ]
     ), p=1/3
 )
