@@ -9,6 +9,7 @@ sys.path.append(os.path.join(cwd, "..", "..", "utils"))
 
 import torch
 import torch.nn as nn
+import numpy as np
 from torchvision import transforms
 from .generator import Generator
 from .discriminator import Discriminator
@@ -62,6 +63,9 @@ class Pix2Pix():
         # generator_valid_loss_history = []
 
         for epoch in range(num_epochs):
+            discriminator_train_loss_history_epoch = np.array([])
+            generator_train_loss_history_epoch = np.array([])
+
             for edge_images, original_images in tqdm(self.train_loader):
                 edge_images = edge_images.to(config.DEVICE)
                 original_images = original_images.to(config.DEVICE)
@@ -74,8 +78,8 @@ class Pix2Pix():
                     fake_loss = bce(fake_logits, torch.zeros(fake_logits.shape).to(config.DEVICE))
                     real_loss = bce(real_logits, torch.ones(real_logits.shape).to(config.DEVICE))
                     discriminator_loss = fake_loss + real_loss
-                    discriminator_train_loss_history.append(discriminator_loss)
-
+                    discriminator_train_loss_history_epoch = np.append(discriminator_train_loss_history_epoch, discriminator_loss.detach().cpu())
+                    
                 discriminator_loss.backward()
                 D_solver.step()
                 D_solver.zero_grad()
@@ -85,11 +89,14 @@ class Pix2Pix():
                     fake_loss = bce(fake_logits, torch.ones(fake_logits.shape).to(config.DEVICE))
                     l1_loss = 100*l1(fake_images, original_images)
                     generator_loss = fake_loss + l1_loss
-                    generator_train_loss_history.append(generator_loss)
+                    generator_train_loss_history_epoch = np.append(generator_train_loss_history_epoch, generator_loss.detach().cpu())
 
                 generator_loss.backward()
                 G_solver.step()
                 G_solver.zero_grad()
+            
+            discriminator_train_loss_history.append(discriminator_train_loss_history_epoch.mean())
+            generator_train_loss_history.append(generator_train_loss_history_epoch.mean())
 
             if epoch%5 == 4:
                 save_model(D, config.MODEL_PATH, "discriminator")
