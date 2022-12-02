@@ -111,9 +111,9 @@ class Pix2Pix():
             idx = random.randint(0, self.val_loader.batch_size-1)
             
             edges, images = self.val_loader.__iter__().__next__()
-            edges = (edges + 0.5).to(config.DEVICE)
-            images = (images + 0.5).to(config.DEVICE)
-            fake_images = (G(edges) + 0.5).to(config.DEVICE)
+            edges = (edges/2 + 0.5).to(config.DEVICE)
+            images = (images/2 + 0.5).to(config.DEVICE)
+            fake_images = (G(edges)/2 + 0.5).to(config.DEVICE)
             
             edge = transforms.ToPILImage()(edges[idx])
             image = transforms.ToPILImage()(images[idx])
@@ -130,9 +130,9 @@ class Pix2Pix():
             idx = random.randint(0, self.val_loader.batch_size-1)
             
             edges, images = self.val_loader.__iter__().__next__()
-            edges = (edges + 0.5).to(config.DEVICE)
-            images = (images + 0.5).to(config.DEVICE)
-            fake_images = (G(edges) + 0.5).to(config.DEVICE)
+            edges = (edges/2 + 0.5).to(config.DEVICE)
+            images = (images/2 + 0.5).to(config.DEVICE)
+            fake_images = (G(edges)/2 + 0.5).to(config.DEVICE)
 
             edge = transforms.ToPILImage()(edges[idx])
             image = transforms.ToPILImage()(images[idx])

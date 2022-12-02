@@ -32,7 +32,7 @@ class ClothingDataset(Dataset):
 
         both_transform = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize([0.5, 0.5, 0.5], [1, 1, 1])
+            transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
         ])
 
         edge_img = both_transform(edge_img)
