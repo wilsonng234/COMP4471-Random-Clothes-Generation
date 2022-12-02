@@ -19,10 +19,10 @@ def load_model(model, folder_dir, file_name, file_extension=".pt"):
     model.load_state_dict(state_dict)
     model.eval()
     
-def write_history(summary_writer, name, history):
+def write_history(summary_writer, name, history, current_epoch):
     print(f"=================== Writing {name} ===================")
     for i, metric in enumerate(history):
-        summary_writer.add_scalar(name, metric)
+        summary_writer.add_scalar(name, metric, current_epoch+i)
 
     summary_writer.flush()
     print(f"=================== Finished Writing {name} ===================")

@@ -95,8 +95,10 @@ class Pix2Pix():
                 save_model(D, config.MODEL_PATH, "discriminator")
                 save_model(G, config.MODEL_PATH, "generator")
                 
-                write_history(summary_writer, "Discriminator Loss/train", discriminator_train_loss_history)
-                write_history(summary_writer, "Generator Loss/train", generator_train_loss_history)
+                write_history(summary_writer, "Discriminator Loss/train", discriminator_train_loss_history, config.CURRENT_EPOCH+epoch-4)
+                write_history(summary_writer, "Generator Loss/train", generator_train_loss_history, config.CURRENT_EPOCH+epoch-4)
+                discriminator_train_loss_history.clear()
+                generator_train_loss_history.clear()
             
             # GENERATE IMAGES
             evaluation_dir = config.EVALUATION_DIR
