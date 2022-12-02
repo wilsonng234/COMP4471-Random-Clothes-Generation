@@ -7,6 +7,7 @@ BATCH_SIZE = 32
 IMG_CHANNELS = 3
 IMG_SIZE = 256
 BLANK_SPACE = 12
+CURRENT_EPOCH = 50
 
 TRAIN_DIR = "datasets/combined_images/train"
 VAL_DIR = "datasets/combined_images/valid"
