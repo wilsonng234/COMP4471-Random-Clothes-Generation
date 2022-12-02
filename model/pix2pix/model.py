@@ -53,8 +53,9 @@ class Pix2Pix():
 
         bce = nn.BCEWithLogitsLoss()
         l1 = nn.L1Loss()
-        import numpy as np
+        
         summary_writer = tensorboard.SummaryWriter(log_dir=config.TENSORBOARD_DIR)
+
         discriminator_train_loss_history = []
         # discriminator_valid_loss_history = []
         generator_train_loss_history = []
@@ -90,11 +91,12 @@ class Pix2Pix():
                 G_solver.step()
                 G_solver.zero_grad()
 
-            if epoch%5==4:
+            if epoch%5 == 4:
                 save_model(D, config.MODEL_PATH, "discriminator")
                 save_model(G, config.MODEL_PATH, "generator")
-                write_history(summary_writer, "Discriminator Loss/train", discriminator_train_loss_history, epoch)
-                write_history(summary_writer, "Generator Loss/train", generator_train_loss_history, epoch)
+                
+                write_history(summary_writer, "Discriminator Loss/train", discriminator_train_loss_history)
+                write_history(summary_writer, "Generator Loss/train", generator_train_loss_history)
             
             # GENERATE IMAGES
             evaluation_dir = config.EVALUATION_DIR
@@ -107,7 +109,7 @@ class Pix2Pix():
                 os.makedirs(output_dir)
 
             idx = random.randint(0, self.val_loader.batch_size-1)
-
+            
             edges, images = self.val_loader.__iter__().__next__()
             edges = (edges + 0.5).to(config.DEVICE)
             images = (images + 0.5).to(config.DEVICE)
@@ -126,7 +128,7 @@ class Pix2Pix():
                 os.makedirs(output_dir)
             
             idx = random.randint(0, self.val_loader.batch_size-1)
-
+            
             edges, images = self.val_loader.__iter__().__next__()
             edges = (edges + 0.5).to(config.DEVICE)
             images = (images + 0.5).to(config.DEVICE)
