@@ -113,7 +113,7 @@ class Pix2Pix():
             edges, images = self.val_loader.__iter__().__next__()
             edges = (edges + 0.5).to(config.DEVICE)
             images = (images + 0.5).to(config.DEVICE)
-            fake_images = G(edges).to(config.DEVICE)
+            fake_images = (G(edges) + 0.5).to(config.DEVICE)
             
             edge = transforms.ToPILImage()(edges[idx])
             image = transforms.ToPILImage()(images[idx])
@@ -132,7 +132,7 @@ class Pix2Pix():
             edges, images = self.val_loader.__iter__().__next__()
             edges = (edges + 0.5).to(config.DEVICE)
             images = (images + 0.5).to(config.DEVICE)
-            fake_images = G(edges).to(config.DEVICE)
+            fake_images = (G(edges) + 0.5).to(config.DEVICE)
 
             edge = transforms.ToPILImage()(edges[idx])
             image = transforms.ToPILImage()(images[idx])
