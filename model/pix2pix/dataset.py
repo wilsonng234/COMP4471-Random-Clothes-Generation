@@ -26,6 +26,10 @@ class ClothingDataset(Dataset):
         edge_img = img[:, :self.img_size, :]
         original_img = img[:, (self.img_size+self.blank_space):, :]
 
+        if self.augmentation_transform is not None:
+            original_img = transforms.ToPILImage()(original_img)
+            original_img = self.augmentation_transform(original_img)
+
         both_transform = transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize([0.5, 0.5, 0.5], [1, 1, 1])
@@ -33,9 +37,6 @@ class ClothingDataset(Dataset):
 
         edge_img = both_transform(edge_img)
         original_img = both_transform(original_img)
-
-        if self.augmentation_transform is not None:
-            original_img = self.augmentation_transform(original_img)
 
         # edge_img = edge_img.transpose(2, 0, 1)
         # original_img = original_img.transpose(2, 0, 1)
