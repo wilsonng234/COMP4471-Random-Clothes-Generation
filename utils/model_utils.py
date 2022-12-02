@@ -18,12 +18,11 @@ def load_model(model, folder_dir, file_name, file_extension=".pt"):
     state_dict = torch.load(os.path.join(folder_dir, file_name))
     model.load_state_dict(state_dict)
     model.eval()
-
+    
 def write_history(summary_writer, name, history):
-    print("=================== Writing Summary ===================")
-    for metric in history:
-        summary_writer.add_scaler(name, metric)
+    print(f"=================== Writing {name} ===================")
+    for i, metric in enumerate(history):
+        summary_writer.add_scalar(name, metric)
 
     summary_writer.flush()
-    print("=================== Finished Writing Model ===================")
-    
+    print(f"=================== Finished Writing {name} ===================")
