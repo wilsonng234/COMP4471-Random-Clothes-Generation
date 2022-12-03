@@ -20,7 +20,7 @@ def save_image(dataloader, G, output_dir, epoch, device):
 
     fake_images = denormalization(G(edges)).to(device)
     edges = denormalization(edges)
-    images = denormalization(edges)
+    images = denormalization(images)
     
     to_pil = transforms.ToPILImage()
     fake_image = to_pil(fake_images[idx])
