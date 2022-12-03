@@ -27,7 +27,6 @@ def save_image(dataloader, G, output_dir, epoch, device):
     edge = to_pil(edges[idx])
     image = to_pil(images[idx])
     
-
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -40,7 +39,7 @@ def train_one_epoch(D, G, train_dataloader, valid_dataloader, D_solver, G_solver
         edge_images = edge_images.to(device)
         original_images = original_images.to(device)
         fake_images = G(edge_images)
-
+        
         discriminator_loss = get_D_loss_batch(D, G, edge_images, original_images, fake_images, bce, device)
         discriminator_loss.backward()
         D_solver.step()
