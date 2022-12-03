@@ -41,14 +41,16 @@ def train_one_epoch(D, G, train_dataloader, valid_dataloader, D_solver, G_solver
         fake_images = G(edge_images)
         
         discriminator_loss = get_D_loss_batch(D, G, edge_images, original_images, fake_images, bce, device)
-        discriminator_loss.backward()
-        D_solver.step()
-        D_solver.zero_grad()
+        if not torch.any(torch.isnan(discriminator_loss)):
+            discriminator_loss.backward()
+            D_solver.step()
+            D_solver.zero_grad()
 
         generator_loss = get_G_loss_batch(D, G, edge_images, original_images, fake_images, bce, l1, device)
-        generator_loss.backward()
-        G_solver.step()
-        G_solver.zero_grad()
+        if not torch.any(torch.isnan(generator_loss)):
+            generator_loss.backward()
+            G_solver.step()
+            G_solver.zero_grad()
 
     with torch.no_grad():
         discriminator_train_loss, generator_train_loss = get_losses_dataset(D, G, train_dataloader, bce, l1, device)
