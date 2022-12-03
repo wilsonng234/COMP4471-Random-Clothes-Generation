@@ -58,6 +58,7 @@ class ClothingDataset(Dataset):
             self,
             batch_size=batch_size,
             shuffle=True,
+            pin_memory=True,
             num_workers=config.NUM_WORKERS
         )
 
