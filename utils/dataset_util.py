@@ -123,6 +123,9 @@ def train_valid_test_split(images_dir, train=0.8, valid=0.1, test=0.1):
         shutil.copy2(src, dst)
         i += 1
 
+def denormalization(image):
+    return image/2 + 0.5
+
 # def split_data_folders():  # it is not used in pix2pix
 #     def read_csv():
 #         img = pd.read_csv('datasets/images.csv')

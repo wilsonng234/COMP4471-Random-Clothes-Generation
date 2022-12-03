@@ -1,30 +1,26 @@
 import os
 import sys 
-import random
 from . import config
-from tqdm import tqdm
 cwd = os.getcwd()
 sys.path.append(cwd)
 sys.path.append(os.path.join(cwd, "..", "..", "utils"))
 
-import torch
 import torch.nn as nn
-import numpy as np
-from torchvision import transforms
 from .generator import Generator
 from .discriminator import Discriminator
 from .dataset import ClothingDataset
 
 from utils.optimizer_util import get_adam_optimizer
 from utils.initalizer_util import he_initialization
-from utils.model_utils import save_model, load_model, write_history
+from utils.model_utils import load_model
+from utils.train_utils import train
 from torch.utils import tensorboard
 
 class Pix2Pix():
     def __init__(self):
         self.train_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.TRAIN_DIR).get_dataloader(config.BATCH_SIZE, shuffle=True)
-        self.val_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.VAL_DIR).get_dataloader(config.BATCH_SIZE, shuffle=False)
-        self.test_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.TEST_DIR).get_dataloader(config.BATCH_SIZE, shuffle=False)
+        self.val_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.VAL_DIR).get_dataloader(config.BATCH_SIZE, shuffle=True)
+        self.test_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.TEST_DIR).get_dataloader(config.BATCH_SIZE, shuffle=True)
 
         self.generator = Generator(config.IMG_CHANNELS).to(config.DEVICE) 
         self.discriminator = Discriminator(in_channels=3).to(config.DEVICE)
@@ -57,95 +53,5 @@ class Pix2Pix():
         
         summary_writer = tensorboard.SummaryWriter(log_dir=config.TENSORBOARD_DIR)
 
-        discriminator_train_loss_history = []
-        # discriminator_valid_loss_history = []
-        generator_train_loss_history = []
-        # generator_valid_loss_history = []
-
-        for epoch in range(num_epochs):
-            discriminator_train_loss_history_epoch = np.array([])
-            generator_train_loss_history_epoch = np.array([])
-
-            for edge_images, original_images in tqdm(self.train_loader):
-                edge_images = edge_images.to(config.DEVICE)
-                original_images = original_images.to(config.DEVICE)
-
-                with torch.cuda.amp.autocast():
-                    fake_images = G(edge_images)
-                    fake_logits = D(edge_images, fake_images.detach())
-                    real_logits = D(edge_images, original_images)
-
-                    fake_loss = bce(fake_logits, torch.zeros(fake_logits.shape).to(config.DEVICE))
-                    real_loss = bce(real_logits, torch.ones(real_logits.shape).to(config.DEVICE))
-                    discriminator_loss = fake_loss + real_loss
-                    discriminator_train_loss_history_epoch = np.append(discriminator_train_loss_history_epoch, discriminator_loss.detach().cpu())
-                    
-                discriminator_loss.backward()
-                D_solver.step()
-                D_solver.zero_grad()
-
-                with torch.cuda.amp.autocast():
-                    fake_logits = D(edge_images, fake_images)
-                    fake_loss = bce(fake_logits, torch.ones(fake_logits.shape).to(config.DEVICE))
-                    l1_loss = 100*l1(fake_images, original_images)
-                    generator_loss = fake_loss + l1_loss
-                    generator_train_loss_history_epoch = np.append(generator_train_loss_history_epoch, generator_loss.detach().cpu())
-
-                generator_loss.backward()
-                G_solver.step()
-                G_solver.zero_grad()
-            
-            discriminator_train_loss_history.append(discriminator_train_loss_history_epoch.mean())
-            generator_train_loss_history.append(generator_train_loss_history_epoch.mean())
-
-            if epoch%5 == 4:
-                save_model(D, config.MODEL_PATH, "discriminator")
-                save_model(G, config.MODEL_PATH, "generator")
-                
-                write_history(summary_writer, "Discriminator Loss/train", discriminator_train_loss_history, config.CURRENT_EPOCH+epoch-4)
-                write_history(summary_writer, "Generator Loss/train", generator_train_loss_history, config.CURRENT_EPOCH+epoch-4)
-                discriminator_train_loss_history.clear()
-                generator_train_loss_history.clear()
-            
-            # GENERATE IMAGES
-            evaluation_dir = config.EVALUATION_DIR
-            if not os.path.exists(evaluation_dir):
-                os.makedirs(evaluation_dir)
-
-            # validation evaluation output
-            output_dir = os.path.join(evaluation_dir, "valid")
-            if not os.path.exists(output_dir):
-                os.makedirs(output_dir)
-
-            edges, images = self.val_loader.__iter__().__next__()
-            idx = random.randint(0, images.shape[0]-1)
-
-            edges = (edges/2 + 0.5).to(config.DEVICE)
-            images = (images/2 + 0.5).to(config.DEVICE)
-            fake_images = (G(edges)/2 + 0.5).to(config.DEVICE)
-            
-            edge = transforms.ToPILImage()(edges[idx])
-            image = transforms.ToPILImage()(images[idx])
-            fake_image = transforms.ToPILImage()(fake_images[idx])
-            edge.save(os.path.join(output_dir, f"edge_{epoch}.jpg"))
-            image.save(os.path.join(output_dir, f"image{epoch}.jpg"))
-            fake_image.save(os.path.join(output_dir, f"fake_image{epoch}.jpg"))
-
-            # test evaluation output
-            output_dir = os.path.join(evaluation_dir, "test")
-            if not os.path.exists(output_dir):
-                os.makedirs(output_dir)
-            
-            edges, images = self.val_loader.__iter__().__next__()
-            idx = random.randint(0, images.shape[0]-1)
-            
-            edges = (edges/2 + 0.5).to(config.DEVICE)
-            images = (images/2 + 0.5).to(config.DEVICE)
-            fake_images = (G(edges)/2 + 0.5).to(config.DEVICE)
-
-            edge = transforms.ToPILImage()(edges[idx])
-            image = transforms.ToPILImage()(images[idx])
-            fake_image = transforms.ToPILImage()(fake_images[idx])
-            edge.save(os.path.join(output_dir, f"edge_{epoch}.jpg"))
-            image.save(os.path.join(output_dir, f"image{epoch}.jpg"))
-            fake_image.save(os.path.join(output_dir, f"fake_image{epoch}.jpg"))
+        train(D, G, self.train_loader, self.val_loader, D_solver, G_solver, bce, l1, config.DEVICE, config.MODEL_PATH, config.EVALUATION_DIR, 
+                cur_epoch=config.CURRENT_EPOCH, num_epochs=num_epochs, summary_writer=summary_writer)
