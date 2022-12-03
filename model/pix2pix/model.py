@@ -24,6 +24,8 @@ class Pix2Pix():
 
         self.generator = Generator(config.IMG_CHANNELS).to(config.DEVICE) 
         self.discriminator = Discriminator(in_channels=3).to(config.DEVICE)
+        self.generator.eval()
+        self.discriminator.eval()
 
         if config.LOAD_MODEL:
             load_model(self.generator, config.MODEL_PATH, "generator")
