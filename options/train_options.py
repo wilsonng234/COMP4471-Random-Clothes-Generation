@@ -1,7 +1,19 @@
 import argparse
 import os
 import torch
-from utils.initalizer_util import mkdirs
+
+def mkdirs(paths):
+    # path builder
+    if isinstance(paths, list) and not isinstance(paths, str):
+        for path in paths:
+            mkdir(path)
+    else:
+        mkdir(paths)
+
+def mkdir(path):
+    # make new directions if not exits
+    if not os.path.exists(path):
+        os.makedirs(path)
 
 class BaseOptions():
     def __init__(self):
