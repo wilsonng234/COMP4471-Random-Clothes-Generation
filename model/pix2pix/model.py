@@ -117,9 +117,9 @@ class Pix2Pix():
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
 
-            idx = random.randint(0, self.val_loader.batch_size-1)
-            
             edges, images = self.val_loader.__iter__().__next__()
+            idx = random.randint(0, images.shape[0]-1)
+
             edges = (edges/2 + 0.5).to(config.DEVICE)
             images = (images/2 + 0.5).to(config.DEVICE)
             fake_images = (G(edges)/2 + 0.5).to(config.DEVICE)
@@ -136,9 +136,9 @@ class Pix2Pix():
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
             
-            idx = random.randint(0, self.val_loader.batch_size-1)
-            
             edges, images = self.val_loader.__iter__().__next__()
+            idx = random.randint(0, images.shape[0]-1)
+            
             edges = (edges/2 + 0.5).to(config.DEVICE)
             images = (images/2 + 0.5).to(config.DEVICE)
             fake_images = (G(edges)/2 + 0.5).to(config.DEVICE)
