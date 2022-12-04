@@ -18,9 +18,9 @@ from torch.utils import tensorboard
 
 class Pix2Pix():
     def __init__(self):
-        self.train_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.TRAIN_DIR).get_dataloader(config.BATCH_SIZE, shuffle=True)
-        self.val_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.VAL_DIR).get_dataloader(config.BATCH_SIZE, shuffle=True)
-        self.test_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.TEST_DIR).get_dataloader(config.BATCH_SIZE, shuffle=True)
+        self.train_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.TRAIN_DIR, True).get_dataloader(config.BATCH_SIZE, shuffle=True)
+        self.val_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.VAL_DIR, False).get_dataloader(config.BATCH_SIZE, shuffle=True)
+        self.test_loader = ClothingDataset(config.IMG_SIZE, config.BLANK_SPACE, config.TEST_DIR, False).get_dataloader(config.BATCH_SIZE, shuffle=True)
 
         self.generator = Generator(config.IMG_CHANNELS).to(config.DEVICE) 
         self.discriminator = Discriminator(in_channels=3).to(config.DEVICE)
