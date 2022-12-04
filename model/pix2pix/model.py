@@ -55,5 +55,5 @@ class Pix2Pix():
         
         summary_writer = tensorboard.SummaryWriter(log_dir=config.TENSORBOARD_DIR)
 
-        train(D, G, self.train_loader, self.val_loader, D_solver, G_solver, bce, l1, config.DEVICE, config.MODEL_PATH, config.EVALUATION_DIR, 
+        train(D, G, self.train_loader, self.val_loader, D_solver, G_solver, bce, l1, config.L1_LAMBDA, config.DEVICE, config.MODEL_PATH, config.EVALUATION_DIR, 
                 cur_epoch=config.CURRENT_EPOCH, num_epochs=num_epochs, summary_writer=summary_writer)

@@ -16,21 +16,21 @@ def get_D_loss_batch(D, G, edge_images, original_images, fake_images, bce, devic
     G.train()
     return discriminator_loss
 
-def get_G_loss_batch(D, G, edge_images, original_images, fake_images, bce, l1, device):
+def get_G_loss_batch(D, G, edge_images, original_images, fake_images, bce, l1, l1_lambda, device):
     D.eval()
     G.eval()
 
     with torch.cuda.amp.autocast():
         fake_logits = D(edge_images, fake_images)
         fake_loss = bce(fake_logits, torch.ones(fake_logits.shape).to(device))
-        l1_loss = 100*l1(fake_images, original_images)
+        l1_loss = l1_lambda*l1(fake_images, original_images)
         generator_loss = fake_loss + l1_loss
 
     D.train()
     G.train()
     return generator_loss
 
-def get_losses_dataset(D, G, data_loader, bce, l1, device, num_batches=None):
+def get_losses_dataset(D, G, data_loader, bce, l1, l1_lambda, device, num_batches=None):
     num_images = 0
     discriminator_loss = 0
     generator_loss = 0
@@ -45,7 +45,7 @@ def get_losses_dataset(D, G, data_loader, bce, l1, device, num_batches=None):
         fake_images = G(edge_images)
 
         discriminator_loss += get_D_loss_batch(D, G, edge_images, original_images, fake_images, bce, device)
-        generator_loss += get_G_loss_batch(D, G, edge_images, original_images, fake_images, bce, l1, device)
+        generator_loss += get_G_loss_batch(D, G, edge_images, original_images, fake_images, bce, l1, l1_lambda, device)
 
         if num_batches is not None:
             if num_batches == 0:
