@@ -32,16 +32,21 @@ class ClothingDataset(Dataset):
             original_img = transforms.ToPILImage()(original_img)
             edge_img = transforms.ToPILImage()(edge_img)
             
-            colorJitter = transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.5)
+            colorJitter = transforms.ColorJitter(brightness=0, contrast=0, saturation=0, hue=0.5)
             horizontalFlip = transforms.RandomHorizontalFlip(p=1)
             
-            threshold = 1/3
+            threshold = 1/2
             if random.random() <= threshold:
                 original_img = colorJitter(original_img)
 
             if random.random() <= threshold:
                 original_img = horizontalFlip(original_img)
                 edge_img = horizontalFlip(edge_img)
+
+            if random.random() <= threshold:
+                shift = [random.randint(0, 25), random.randint(0, 25)]
+                original_img = transforms.functional.affine(original_img, angle=0, translate=shift, scale=1, shear=0, fill=1)
+                edge_img = transforms.functional.affine(edge_img, angle=0, translate=shift, scale=1, shear=0, fill=1)
 
         both_transform = transforms.Compose([
             transforms.ToTensor(),
@@ -58,7 +63,7 @@ class ClothingDataset(Dataset):
             self,
             batch_size=batch_size,
             shuffle=True,
-            pin_memory=True,
+            pin_memory=False,
             num_workers=config.NUM_WORKERS
         )
 
