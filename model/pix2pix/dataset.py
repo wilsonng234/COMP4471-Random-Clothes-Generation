@@ -44,7 +44,7 @@ class ClothingDataset(Dataset):
                 edge_img = horizontalFlip(edge_img)
 
             if random.random() <= threshold:
-                shift = [random.randint(0, 25), random.randint(0, 25)]
+                shift = [random.randint(0, 50), random.randint(0, 50)]
                 original_img = transforms.functional.affine(original_img, angle=0, translate=shift, scale=1, shear=0, fill=255)
                 edge_img = transforms.functional.affine(edge_img, angle=0, translate=shift, scale=1, shear=0, fill=255)
 
