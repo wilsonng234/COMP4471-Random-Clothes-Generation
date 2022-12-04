@@ -38,20 +38,18 @@ def get_losses_dataset(D, G, data_loader, bce, l1, l1_lambda, device, num_batche
     D.eval()
     G.eval()
     for edge_images, original_images in data_loader:
-        num_images += original_images.shape[0]
+        if num_batches is not None and num_batches == 0:
+            break
+        else:
+            num_batches -= 1
+            num_images += original_images.shape[0]
 
-        edge_images = edge_images.to(device)
-        original_images = original_images.to(device)
-        fake_images = G(edge_images)
+            edge_images = edge_images.to(device)
+            original_images = original_images.to(device)
+            fake_images = G(edge_images)
 
-        discriminator_loss += get_D_loss_batch(D, G, edge_images, original_images, fake_images, bce, device)
-        generator_loss += get_G_loss_batch(D, G, edge_images, original_images, fake_images, bce, l1, l1_lambda, device)
-
-        if num_batches is not None:
-            if num_batches == 0:
-                break
-            else:
-                num_batches -= 1
+            discriminator_loss += get_D_loss_batch(D, G, edge_images, original_images, fake_images, bce, device)
+            generator_loss += get_G_loss_batch(D, G, edge_images, original_images, fake_images, bce, l1, l1_lambda, device)
 
     D.train()
     G.train()
