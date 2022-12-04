@@ -57,8 +57,8 @@ def train_one_epoch(D, G, train_dataloader, valid_dataloader, D_solver, G_solver
             print("generator_loss:", generator_loss.item())
 
     with torch.no_grad():
-        discriminator_train_loss, generator_train_loss = get_losses_dataset(D, G, train_dataloader, bce, l1, device)
-        discriminator_valid_loss, generator_valid_loss = get_losses_dataset(D, G, valid_dataloader, bce, l1, device)
+        discriminator_train_loss, generator_train_loss = get_losses_dataset(D, G, train_dataloader, bce, l1, device, num_batches=100)
+        discriminator_valid_loss, generator_valid_loss = get_losses_dataset(D, G, valid_dataloader, bce, l1, device, num_batches=100)
 
         save_image(train_dataloader, G, os.path.join(evaluation_dir, "train"), epoch, device)
         save_image(valid_dataloader, G, os.path.join(evaluation_dir, "valid"), epoch, device)
