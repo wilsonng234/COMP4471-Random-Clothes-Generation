@@ -5,6 +5,7 @@ cwd = os.getcwd()
 sys.path.append(cwd)
 sys.path.append(os.path.join(cwd, "..", "..", "utils"))
 
+import torch
 import torch.nn as nn
 from .generator import Generator
 from .discriminator import Discriminator
@@ -28,8 +29,8 @@ class Pix2Pix():
         self.discriminator.eval()
 
         if config.LOAD_MODEL:
-            load_model(self.generator, config.MODEL_PATH, "generator")
-            load_model(self.discriminator, config.MODEL_PATH, "discriminator")
+            load_model(self.generator, config.MODEL_PATH, f"generator_{config.CURRENT_EPOCH-1}")
+            load_model(self.discriminator, config.MODEL_PATH, f"discriminator_{config.CURRENT_EPOCH-1}")
         else:
             he_initialization(self.generator)
             he_initialization(self.discriminator)
@@ -49,11 +50,13 @@ class Pix2Pix():
 
         D_solver = get_adam_optimizer(self.discriminator)
         G_solver = get_adam_optimizer(self.generator)
+        D_scaler = torch.cuda.amp.GradScaler()
+        G_scaler = torch.cuda.amp.GradScaler()
 
         bce = nn.BCEWithLogitsLoss()
         l1 = nn.L1Loss()
         
         summary_writer = tensorboard.SummaryWriter(log_dir=config.TENSORBOARD_DIR)
 
-        train(D, G, self.train_loader, self.val_loader, D_solver, G_solver, bce, l1, config.L1_LAMBDA, config.DEVICE, config.MODEL_PATH, config.EVALUATION_DIR, 
+        train(D, G, self.train_loader, self.val_loader, D_solver, G_solver, D_scaler, G_scaler, bce, l1, config.L1_LAMBDA, config.DEVICE, config.MODEL_PATH, config.EVALUATION_DIR, 
                 cur_epoch=config.CURRENT_EPOCH, num_epochs=num_epochs, summary_writer=summary_writer)
