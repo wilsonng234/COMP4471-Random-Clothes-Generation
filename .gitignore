@@ -1,6 +1,6 @@
-test.*
 .DS_store
-__pycache__
-datasets
 .idea
-tests
+__pycache__
+test.*
+datasets
+tensorboard
