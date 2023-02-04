@@ -1,8 +1,6 @@
-numpy==1.23.5
-opencv_python_headless==4.6.0.66
-pandas==1.4.2
-Pillow==9.3.0
+# 1. conda install pytorch==1.13.1 torchvision==0.14.1 pytorch-cuda=11.7 -c pytorch -c nvidia
+# 2. pip install -r requirements.txt
+
 rembg==2.0.30
-torch==1.13.1
-torchvision==0.14.1
-tqdm==4.64.1
+pandas==1.4.2
+tensorboard==2.11.2
