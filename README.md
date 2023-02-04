@@ -1,11 +1,11 @@
 # COMP4471-Random-Clothes-Generation
-PyTorch reimplementation of [Pix2Pix](https://arxiv.org/abs/1611.07004) for random clothes generation.
+PyTorch reimplementation of [Pix2Pix](https://arxiv.org/abs/1611.07004) for random clothes generation
 
 ## Dataset
 Dataset available: https://www.kaggle.com/datasets/agrigorev/clothing-dataset-full
 
 ## Installation 
-Make sure conda is installed.
+Make sure conda is installed
 ```
 1. conda install pytorch==1.13.1 torchvision==0.14.1 pytorch-cuda=11.7 -c pytorch -c nvidia
 2. pip install -r requirements.txt
