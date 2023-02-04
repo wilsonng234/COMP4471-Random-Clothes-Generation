@@ -7,7 +7,7 @@ Dataset available: https://www.kaggle.com/datasets/agrigorev/clothing-dataset-fu
 ## Installation 
 Make sure conda is installed
 ```
-1. conda install pytorch==1.13.1 torchvision==0.14.1 pytorch-cuda=11.7 -c pytorch -c nvidia
+1. conda install pytorch==1.13.0 torchvision==0.14.0 pytorch-cuda=11.7 -c pytorch -c nvidia
 2. pip install -r requirements.txt
 ```
 
