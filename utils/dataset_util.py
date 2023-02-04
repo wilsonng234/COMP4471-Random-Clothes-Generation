@@ -83,7 +83,7 @@ def combine_edges(images_dir, combined_dir, img_channel=3, img_size=256):
         cnt = cnt +1
 
 
-def train_valid_test_split(images_dir, train=0.86, valid=0.07, test=0.07):
+def train_valid_test_split(images_dir, train=0.8, valid=0.1, test=0.1):
     images_names = os.listdir(images_dir)
     random.shuffle(images_names)
     num_images = len(images_names)
@@ -92,9 +92,9 @@ def train_valid_test_split(images_dir, train=0.86, valid=0.07, test=0.07):
     num_valid = num_images*valid
     num_test = num_images-num_train-num_valid
 
-    train_dir = os.path.join(images_dir, "..", "train")
-    valid_dir = os.path.join(images_dir, "..", "valid")
-    test_dir = os.path.join(images_dir, "..", "test")
+    train_dir = os.path.join(images_dir, ".", "train")
+    valid_dir = os.path.join(images_dir, ".", "valid")
+    test_dir = os.path.join(images_dir, ".", "test")
 
     if not os.path.exists(train_dir):
         os.makedirs(train_dir)
