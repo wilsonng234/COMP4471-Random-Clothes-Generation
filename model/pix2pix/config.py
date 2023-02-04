@@ -8,6 +8,7 @@ IMG_CHANNELS = 3
 IMG_SIZE = 256
 BLANK_SPACE = 12
 L1_LAMBDA = 100
+# set CURRENT_EPOCH to multiple of five for checkpoints and tensorboard
 CURRENT_EPOCH = 0
 NUM_WORKERS = 8
 
