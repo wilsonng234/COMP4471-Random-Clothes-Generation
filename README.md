@@ -1,5 +1,5 @@
 # COMP4471-Random-Clothes-Generation
-PyTorch reimplementation of [Pix2Pix](https://arxiv.org/abs/1611.07004) for random clothes generation
+PyTorch reimplementation of [Pix2Pix](https://arxiv.org/abs/1611.07004) and apply for random clothes generation based on edge information
 
 ## Dataset
 Dataset available: https://www.kaggle.com/datasets/agrigorev/clothing-dataset-full
