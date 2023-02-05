@@ -1,18 +1,24 @@
 # COMP4471-Random-Clothes-Generation
+
 PyTorch reimplementation of [Pix2Pix](https://arxiv.org/abs/1611.07004) and apply for random clothes generation based on edge information
 
 ## Dataset
-Dataset available: https://www.kaggle.com/datasets/agrigorev/clothing-dataset-full
 
-## Installation 
+Dataset available: https://www.kaggle.com/datasets/agrigorev/clothing-dataset-full <br>
+Or other images containing clothes only
+
+## Installation
+
 Python Version: 3.10.9 <br><br>
 Make sure conda is installed
+
 ```
 1. conda install pytorch==1.13.0 torchvision==0.14.0 pytorch-cuda=11.7 -c pytorch -c nvidia
 2. pip install -r requirements.txt
 ```
 
 ## Getting started
+
 ```
 1. Install images from https://www.kaggle.com/datasets/agrigorev/clothing-dataset-full
 2. Put images under datasets/images directory
@@ -20,8 +26,19 @@ Make sure conda is installed
 ```
 
 ## Training
+
 Hyperparameters can be tuned in `model/pix2pix/config.py`
 
 ## Results
-Results can be found under `datasets/evaluation` for each 5 epochs of training <br>
-Loss and accuracy history is recorded in `tensorboard` directory
+
+Results can be found under `datasets/evaluation` after each 5 epochs of training <br>
+Loss history is recorded in `tensorboard` directory | Run `tensorboard --logdir=tensorboard` to see the history
+
+### Some Generated Results:
+
+<table>
+    <tr>
+        <img src="imgs/a.png" width="300px" height="300px" style="margin-right: 20px">
+        <img src="imgs/b.png" width="300px" height="300px" style="margin-right: 20px">
+        <img src="imgs/c.png" width="300px" height="300px" style="margin-right: 20px">
+<td>
