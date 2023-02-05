@@ -31,8 +31,8 @@ Hyperparameters can be tuned in `model/pix2pix/config.py`
 
 ## Results
 
-Results can be found under `datasets/evaluation` after each 5 epochs of training <br>
-Loss history is recorded in `tensorboard` directory | Run `tensorboard --logdir=tensorboard` to see the history
+- Search `datasets/evaluation` directory to see the generated results for each 5 epochs of training
+- Run `tensorboard --logdir=tensorboard` to see the history
 
 ### Some Generated Results:
 
