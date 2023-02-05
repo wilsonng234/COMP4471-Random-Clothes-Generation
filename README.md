@@ -38,8 +38,8 @@ Loss history is recorded in `tensorboard` directory | Run `tensorboard --logdir=
 
 <table>
     <tr>
-        <td> <img src="imgs/a.png" width="300px" height="300px" style="margin-right: 20px"> </td>
-        <td> <img src="imgs/b.png" width="300px" height="300px" style="margin-right: 20px"> </td>
-        <td> <img src="imgs/c.png" width="300px" height="300px" style="margin-right: 20px"> </td>
+        <td> <img src="imgs/a.png" width="300px" height="300px"> </td>
+        <td> <img src="imgs/b.png" width="300px" height="300px"> </td>
+        <td> <img src="imgs/c.png" width="300px" height="300px"> </td>
     </tr>
 </table>
