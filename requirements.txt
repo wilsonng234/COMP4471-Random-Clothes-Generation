@@ -1,0 +1,6 @@
+# 1. conda install pytorch==1.13.0 torchvision==0.14.0 pytorch-cuda=11.7 -c pytorch -c nvidia
+# 2. pip install -r requirements.txt
+
+rembg==2.0.30
+pandas==1.4.2
+tensorboard==2.11.2
