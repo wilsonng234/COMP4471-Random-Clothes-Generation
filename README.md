@@ -32,7 +32,7 @@ Hyperparameters can be tuned in `model/pix2pix/config.py`
 ## Results
 
 - Search `datasets/evaluation` directory to see the generated results for each 5 epochs of training
-- Run `tensorboard --logdir=tensorboard` to see the history
+- Run `tensorboard --logdir=tensorboard` to see the loss history
 
 ### Some Generated Results:
 
