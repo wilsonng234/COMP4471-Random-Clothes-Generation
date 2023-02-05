@@ -44,7 +44,7 @@ class Pix2Pix():
     def D(self, x, y):
         return self.discriminator(x, y)
     
-    def train(self, num_epochs=100):
+    def train(self, num_epochs=500):
         D = self.discriminator
         G = self.generator
 
