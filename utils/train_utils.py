@@ -14,11 +14,8 @@ def save_image(dataloader, G, output_dir, epoch, device):
 
     edges, images = dataloader.__iter__().__next__()
     idx = random.randint(0, images.shape[0]-1)
-    
-    edges = edges.to(device)
-    images = images.to(device)
 
-    fake_images = denormalization(G(edges)).to(device)
+    fake_images = denormalization(G(edges.to(device)))
     edges = denormalization(edges)
     images = denormalization(images)
     
@@ -26,7 +23,7 @@ def save_image(dataloader, G, output_dir, epoch, device):
     fake_image = to_pil(fake_images[idx])
     edge = to_pil(edges[idx])
     image = to_pil(images[idx])
-    
+
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 

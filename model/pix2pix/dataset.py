@@ -28,10 +28,10 @@ class ClothingDataset(Dataset):
         edge_img = img[:, :self.img_size, :]
         original_img = img[:, (self.img_size+self.blank_space):, :]
 
+        original_img = transforms.ToTensor()(original_img)
+        edge_img = transforms.ToTensor()(edge_img)
+
         if self.augmentation:
-            original_img = transforms.ToPILImage()(original_img)
-            edge_img = transforms.ToPILImage()(edge_img)
-            
             colorJitter = transforms.ColorJitter(brightness=0, contrast=0, saturation=0, hue=0.5)
             horizontalFlip = transforms.RandomHorizontalFlip(p=1)
             
@@ -48,22 +48,18 @@ class ClothingDataset(Dataset):
                 original_img = transforms.functional.affine(original_img, angle=0, translate=shift, scale=1, shear=0, fill=255)
                 edge_img = transforms.functional.affine(edge_img, angle=0, translate=shift, scale=1, shear=0, fill=255)
 
-        both_transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
-        ])
-
-        edge_img = both_transform(edge_img)
-        original_img = both_transform(original_img)
-
+        normalize = transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
+        edge_img = normalize(edge_img)
+        original_img = normalize(original_img)
+        
         return edge_img, original_img
 
     def get_dataloader(self, batch_size, shuffle=True):
         loader = DataLoader(
             self,
             batch_size=batch_size,
-            shuffle=True,
-            pin_memory=False,
+            shuffle=shuffle,
+            pin_memory=config.PIN_MEMORY,
             num_workers=config.NUM_WORKERS
         )
 

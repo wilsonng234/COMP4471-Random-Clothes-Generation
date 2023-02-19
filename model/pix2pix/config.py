@@ -25,6 +25,7 @@ BLANK_SPACE = 12
 L1_LAMBDA = 100
 # set CURRENT_EPOCH to multiple of five for checkpoints and tensorboard
 CURRENT_EPOCH = get_current_epoch()
+PIN_MEMORY = True
 NUM_WORKERS = 8
 
 TRAIN_DIR = "datasets/combined_images/train"
