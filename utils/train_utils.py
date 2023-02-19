@@ -45,6 +45,9 @@ def train_one_epoch(D, G, train_dataloader, valid_dataloader, D_solver, G_solver
             D_scaler.update()
         else:
             print("discriminator_loss:", discriminator_loss.item())
+            print("edge_images:", edge_images.min().item(), edge_images.max().item())
+            print("original_images:", original_images.min().item(), original_images.max().item())
+            print("fake_images:", fake_images.min().item(), fake_images.max().item())
 
         generator_loss = get_G_loss_batch(D, G, edge_images, original_images, fake_images, bce, l1, l1_lambda, device)
         if not torch.any(torch.isnan(generator_loss)):
@@ -55,7 +58,10 @@ def train_one_epoch(D, G, train_dataloader, valid_dataloader, D_solver, G_solver
             
         else:
             print("generator_loss:", generator_loss.item())
-
+            print("edge_images:", edge_images.min().item(), edge_images.max().item())
+            print("original_images:", original_images.min().item(), original_images.max().item())
+            print("fake_images:", fake_images.min().item(), fake_images.max().item())
+            
     with torch.no_grad():
         D.eval()
         G.eval()
