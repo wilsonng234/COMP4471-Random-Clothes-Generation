@@ -18,7 +18,7 @@ def get_current_epoch():
     return current_epoch + 1
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-BATCH_SIZE = 32
+BATCH_SIZE = 1
 IMG_CHANNELS = 3
 IMG_SIZE = 256
 BLANK_SPACE = 12
