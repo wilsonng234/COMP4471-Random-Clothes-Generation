@@ -62,9 +62,6 @@ def train_one_epoch(D, G, train_dataloader, valid_dataloader, D_solver, G_solver
         discriminator_train_loss, generator_train_loss = get_losses_dataset(D, G, train_dataloader, bce, l1, l1_lambda, device, num_batches=100)
         discriminator_valid_loss, generator_valid_loss = get_losses_dataset(D, G, valid_dataloader, bce, l1, l1_lambda, device, num_batches=100)
 
-        save_image(train_dataloader, G, os.path.join(evaluation_dir, "train"), epoch, device)
-        save_image(valid_dataloader, G, os.path.join(evaluation_dir, "valid"), epoch, device)
-
         D.train()
         G.train()
 
@@ -89,8 +86,8 @@ def train(D, G, train_dataloader, valid_dataloader, D_solver, G_solver, D_scaler
         generator_valid_loss_history.append(generator_valid_loss)
 
         if epoch%5 == 4:
-            save_model(D, model_path, f"discriminator_{epoch}")
-            save_model(G, model_path, f"generator_{epoch}")
+            save_image(train_dataloader, G, os.path.join(evaluation_dir, "train"), epoch, device)
+            save_image(valid_dataloader, G, os.path.join(evaluation_dir, "valid"), epoch, device)
             
             write_history(summary_writer, "Discriminator Loss/train", discriminator_train_loss_history, epoch-4)
             write_history(summary_writer, "Generator Loss/train", generator_train_loss_history, epoch-4)
@@ -101,6 +98,9 @@ def train(D, G, train_dataloader, valid_dataloader, D_solver, G_solver, D_scaler
             generator_train_loss_history.clear()
             discriminator_valid_loss_history.clear()
             generator_valid_loss_history.clear()
+
+            save_model(D, model_path, f"discriminator_{epoch}")
+            save_model(G, model_path, f"generator_{epoch}")
 
     D.eval()
     G.eval()
