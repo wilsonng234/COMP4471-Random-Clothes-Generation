@@ -31,6 +31,11 @@ class ClothingDataset(Dataset):
         original_img = transforms.ToTensor()(original_img)
         edge_img = transforms.ToTensor()(edge_img)
 
+        if (edge_img.min() < 0 or edge_img.max() > 1):
+            raise ValueError("before augmentation edge_img is not normalized")
+        if (original_img.min() < 0 or original_img.max() > 1):
+            raise ValueError("before augmentation original_img is not normalized")
+        
         if self.augmentation:
             colorJitter = transforms.ColorJitter(brightness=0, contrast=0, saturation=0, hue=0.5)
             horizontalFlip = transforms.RandomHorizontalFlip(p=1)
@@ -43,14 +48,19 @@ class ClothingDataset(Dataset):
                 original_img = horizontalFlip(original_img)
                 edge_img = horizontalFlip(edge_img)
 
-            if random.random() <= threshold:
-                shift = [random.randint(-50, 50), random.randint(-50, 50)]
-                original_img = transforms.functional.affine(original_img, angle=0, translate=shift, scale=1, shear=0, fill=255)
-                edge_img = transforms.functional.affine(edge_img, angle=0, translate=shift, scale=1, shear=0, fill=255)
-
+        if (edge_img.min() < 0 or edge_img.max() > 1):
+            raise ValueError("after aug edge_img is not normalized")
+        if (original_img.min() < 0 or original_img.max() > 1):
+            raise ValueError("after aug original_img is not normalized")
+        
         normalize = transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
         edge_img = normalize(edge_img)
         original_img = normalize(original_img)
+        
+        if (edge_img.min() < -1 or edge_img.max() > 1):
+            raise ValueError("invalid range")
+        if (original_img.min() < -1 or original_img.max() > 1):
+            raise ValueError("invalid range")
         
         return edge_img, original_img
 
