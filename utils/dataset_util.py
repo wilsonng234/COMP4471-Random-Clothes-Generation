@@ -1,10 +1,6 @@
-import torch
-from torchvision import datasets, transforms
-
 import random
 import rembg
 from PIL import Image
-import pandas as pd
 import os
 from os import listdir
 import shutil
@@ -127,43 +123,3 @@ def train_valid_test_split(images_dir, train=0.8, valid=0.1, test=0.1):
 
 def denormalization(image):
     return image/2 + 0.5
-
-# def split_data_folders():  # it is not used in pix2pix
-#     def read_csv():
-#         img = pd.read_csv('datasets/images.csv')
-#         return img
-        
-#     def mkdir(path):
-#         path1 = os.path.join('datasets/classes', path)
-#         folder1 = os.path.exists(path1)
-#         if not folder1:
-#             os.makedirs(path1)
-
-#     def folders_create(label):
-#         for i in set(label):
-#             mkdir(str(i))
-
-#     def copy_files(id, label):
-#         assert os.path.exists('datasets/images_without_bg')
-#         assert os.path.exists('datasets/classes')
-
-#         for i in range(len(id)):
-#             name = str(id[i])
-#             folder = str(label[i])
-#             file_name = name+'.jpg'
-
-#             img_source = os.path.join('datasets/images_without_bg', file_name)
-#             img_target = os.path.join('datasets/classes', folder, file_name)
-            
-#             try:
-#                 if not os.path.exists(img_target):
-#                     shutil.copy(img_source, img_target)
-#             except FileNotFoundError:   # some image files are corrupted and be deleted
-#                 pass
-
-#     img = read_csv()
-#     id = img['image']
-#     label = img['label']
-    
-#     folders_create(label)
-#     copy_files(id, label)
