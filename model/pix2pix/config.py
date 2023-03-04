@@ -13,7 +13,8 @@ def get_current_epoch(LOAD_MODEL, MODEL_PATH):
                 epoch = int(re.findall(r'\d+', filename)[0])
                 current_epoch = max(current_epoch, epoch)
             except:
-                print(f'invalid file name in {MODEL_PATH}')
+                if (filename != ".gitignore"):
+                    print(f'invalid file name in {MODEL_PATH}')
             
         break
 
